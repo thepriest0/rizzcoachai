@@ -1527,6 +1527,11 @@
         }
       });
     
+      // Function to check if the device is mobile (screen width <= 768px)
+      function isMobile() {
+        return window.innerWidth <= 768;
+      }
+    
       // Function to generate responses using the API
       async function generateResponses(message) {
         try {
@@ -1598,6 +1603,13 @@
         if (responsesContainer.firstChild) {
           responsesContainer.firstChild.classList.add("selected");
           selectedResponseIndex = 0;
+        }
+    
+        // Scroll to results container on mobile devices
+        if (isMobile()) {
+          setTimeout(() => {
+            resultsContainer.scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 100); // Small delay to ensure DOM is updated
         }
       }
     
@@ -2162,3 +2174,4 @@
   </svg>
 </body>
 </html>
+`
