@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How It Works - Rizz Coach</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+  <style>
+    :root {
+      --primary: #ff3e6c;
+      --primary-dark: #e62e5c;
+      --secondary: #6c63ff;
+      --dark: #2d2d2d;
+      --light: #f8f9fa;
+      --gray: #6c757d;
+      --success: #28a745;
+      --gradient-1: linear-gradient(135deg, #ff3e6c 0%, #ff8e53 100%);
+      --gradient-2: linear-gradient(135deg, #6c63ff 0%, #3a86ff 100%);
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      --radius: 12px;
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: "Poppins", sans-serif;
+      background-color: var(--light);
+      color: var(--dark);
+      line-height: 1.6;
+    }
+    
+    .app-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    /* Header Styles */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .logo-container {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .logo-container h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 0;
+    }
+    
+    .tagline {
+      font-size: 14px;
+      color: var(--gray);
+    }
+    
+    nav ul {
+      display: flex;
+      list-style: none;
+    }
+    
+    nav ul li {
+      margin-left: 30px;
+    }
+    
+    nav ul li a {
+      text-decoration: none;
+      color: var(--dark);
+      font-weight: 500;
+      transition: var(--transition);
+    }
+    
+    nav ul li a:hover {
+      color: var(--primary);
+    }
+    
+    nav ul li.active a {
+      color: var(--primary);
+    }
+    
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 30px 0;
+      color: var(--gray);
+      font-size: 14px;
+    }
+    
+    /* How It Works Styles */
+    .how-it-works {
+      padding: 60px 0;
+    }
+    
+    .how-it-works h2 {
+      text-align: center;
+      margin-bottom: 50px;
+      font-size: 36px;
+    }
+    
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      margin-bottom: 60px;
+    }
+    
+    .step-card {
+      background-color: white;
+      border-radius: var(--radius);
+      padding: 30px;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+    }
+    
+    .step-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .step-number {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      background: var(--gradient-1);
+      color: white;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 40px;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    
+    .step-card h3 {
+      margin-bottom: 15px;
+      font-size: 20px;
+    }
+    
+    .step-card p {
+      color: var(--gray);
+      line-height: 1.6;
+    }
+    
+    .features {
+      background-color: white;
+      border-radius: var(--radius);
+      padding: 40px;
+      box-shadow: var(--shadow);
+      margin-bottom: 60px;
+    }
+    
+    .features h3 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 24px;
+    }
+    
+    .feature-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+    }
+    
+    .feature-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--gradient-2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    
+    .feature-icon svg {
+      width: 20px;
+      height: 20px;
+      color: white;
+    }
+    
+    .feature-text h4 {
+      margin-bottom: 5px;
+      font-size: 18px;
+    }
+    
+    .feature-text p {
+      color: var(--gray);
+      font-size: 14px;
+    }
+    
+    .faq {
+      margin-bottom: 60px;
+    }
+    
+    .faq h3 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 24px;
+    }
+    
+    .faq-item {
+      background-color: white;
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 15px;
+    }
+    
+    .faq-question {
+      font-weight: 600;
+      margin-bottom: 10px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .faq-question::after {
+      content: '+';
+      font-size: 20px;
+      color: var(--primary);
+    }
+    
+    .faq-item.active .faq-question::after {
+      content: '-';
+    }
+    
+    .faq-answer {
+      display: none;
+      color: var(--gray);
+      padding-top: 10px;
+      border-top: 1px solid #eee;
+    }
+    
+    .faq-item.active .faq-answer {
+      display: block;
+    }
+    
+    .cta-section {
+      text-align: center;
+      padding: 60px 0;
+    }
+    
+    .cta-section h3 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+    
+    .cta-section p {
+      color: var(--gray);
+      max-width: 600px;
+      margin: 0 auto 30px;
+    }
+    
+    .cta-button {
+      background: var(--gradient-1);
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: var(--shadow);
+      text-decoration: none;
+      display: inline-block;
+    }
+    
+    .cta-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 25px rgba(255, 62, 108, 0.3);
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 992px) {
+      .how-it-works h2 {
+        font-size: 32px;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        gap: 15px;
+      }
+    
+      nav ul li {
+        margin-left: 20px;
+      }
+      
+      .features {
+        padding: 30px 20px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .how-it-works h2 {
+        font-size: 28px;
+      }
+      
+      .step-card {
+        padding: 20px;
+      }
+      
+      .feature-item {
+        flex-direction: column;
+      }
+      
+      .feature-icon {
+        margin-bottom: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <header>
+      <div class="logo-container">
+        <h1>Rizz Coach</h1>
+        <span class="tagline">Your Personal Flirting Assistant</span>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li class="active"><a href="about.html">How It Works</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <section class="how-it-works">
+        <h2>How Rizz Coach Works</h2>
+        
+        <div class="steps">
+          <div class="step-card">
+            <div class="step-number">1</div>
+            <h3>Input Your Situation</h3>
+            <p>Enter the message you received or describe the situation you're in. The more details you provide, the better your responses will be.</p>
+          </div>
+          
+          <div class="step-card">
+            <div class="step-number">2</div>
+            <h3>Customize Your Style</h3>
+            <p>Choose your preferred tone, interest level, and response mode. Want to sound like a celebrity? Try our impression mode!</p>
+          </div>
+          
+          <div class="step-card">
+            <div class="step-number">3</div>
+            <h3>Generate Responses</h3>
+            <p>Our AI analyzes your inputs and generates multiple flirty, witty responses tailored to your specific situation and preferences.</p>
+          </div>
+          
+          <div class="step-card">
+            <div class="step-number">4</div>
+            <h3>Choose & Send</h3>
+            <p>Select the response that feels right for you, copy it with one click, and send it to make a lasting impression.</p>
+          </div>
+        </div>
+        
+        <div class="features">
+          <h3>Key Features</h3>
+          
+          <div class="feature-list">
+            <div class="feature-item">
+              <div class="feature-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                </svg>
+              </div>
+              <div class="feature-text">
+                <h4>Personalized Responses</h4>
+                <p>Get responses tailored to your specific situation and communication style.</p>
+              </div>
+            </div>
+            
+            <div class="feature-item">
+              <div class="feature-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div class="feature-text">
+                <h4>Multiple Tone Options</h4>
+                <p>Choose from sweet, sarcastic, bold, funny, or smooth talker tones.</p>
+              </div>
+            </div>
+            
+            <div class="feature-item">
+              <div class="feature-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
+                </svg>
+              </div>
+              <div class="feature-text">
+                <h4>Celebrity Impressions</h4>
+                <p>Generate responses in the style of your favorite celebrities or characters.</p>
+              </div>
+            </div>
+            
+            <div class="feature-item">
+              <div class="feature-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <div class="feature-text">
+                <h4>Interest Level Control</h4>
+                <p>Adjust how interested or enthusiastic your responses appear.</p>
+              </div>
+            </div>
+            
+            <div class="feature-item">
+              <div class="feature-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div class="feature-text">
+                <h4>Opener Generator</h4>
+                <p>Create perfect icebreakers for any situation or dating profile.</p>
+              </div>
+            </div>
+            
+            <div class="feature-item">
+              <div class="feature-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <div class="feature-text">
+                <h4>Privacy Focused</h4>
+                <p>We don't store your conversations or personal information.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="faq">
+          <h3>Frequently Asked Questions</h3>
+          
+          <div class="faq-item">
+            <div class="faq-question">Is Rizz Coach free to use?</div>
+            <div class="faq-answer">Rizz Coach offers a free tier with limited generations per day. For unlimited access and premium features, we offer affordable subscription plans.</div>
+          </div>
+          
+          <div class="faq-item">
+            <div class="faq-question">How accurate are the responses?</div>
+            <div class="faq-answer">Our AI is trained on successful conversation patterns and flirting techniques. While we can't guarantee every response will work in every situation, our users report high success rates when using responses that match their authentic personality.</div>
+          </div>
+          
+          <div class="faq-item">
+            <div class="faq-question">Can I use this for any messaging platform?</div>
+            <div class="faq-answer">Yes! Rizz Coach generates text responses that you can copy and paste into any messaging app, dating app, or social media platform.</div>
+          </div>
+          
+          <div class="faq-item">
+            <div class="faq-question">Do you store my conversations?</div>
+            <div class="faq-answer">No, we prioritize your privacy. We don't store the messages you input or the conversations you have. Your data is only used temporarily to generate responses.</div>
+          </div>
+          
+          <div class="faq-item">
+            <div class="faq-question">Can I suggest new features?</div>
+            <div class="faq-answer">We love hearing from our users. You can send feature requests through our feedback form, and we regularly update the app with new capabilities.</div>
+          </div>
+        </div>
+        
+        <div class="cta-section">
+          <h3>Ready to Level Up Your Flirting Game?</h3>
+          <p>Stop stressing over what to say and start making meaningful connections with confidence.</p>
+          <a href="index.html#generator" class="cta-button">Try Rizz Coach Now</a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 Rizz Coach. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script>
+    // FAQ toggle functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const faqItems = document.querySelectorAll('.faq-item');
+      
+      faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question');
+        
+        question.addEventListener('click', () => {
+          // Close all other items
+          faqItems.forEach(otherItem => {
+            if (otherItem !== item) {
+              otherItem.classList.remove('active');
+            }
+          });
+          
+          // Toggle current item
+          item.classList.toggle('active');
+        });
+      });
+    });
+  </script>
+</body>
+</html>
