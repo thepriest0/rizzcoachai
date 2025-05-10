@@ -370,6 +370,7 @@ def construct_system_prompt(tone, level, mode, character='', message=''):
     2. Keep responses tasteful, consensual, and within a romantic context.
     3. Avoid creepy, non-consensual, or offensive language.
     4. Format responses as a numbered list with 3 options, each starting with '1. ', '2. ', or '3. '.
+    5. If the user uses nigerian terms, make sure to respond in a nigerian manner.
     """
     
     return system_prompt
@@ -410,6 +411,7 @@ def construct_partner_system_prompt(partner_type, personality, is_explicit=False
     8. Respond as if you're in an established relationship with the user.
     9. Match the user's explicitness when appropriate, staying within a romantic and consensual context.
     10. All responses must respect boundaries and prioritize consent.
+    11. If the user uses nigerian terms, make sure to respond in a nigerian manner.
     
     Respond directly to the user's message in a natural, conversational way without any prefixes or explanations.
     """
