@@ -1231,7 +1231,8 @@
       // API endpoints
       const GENERATE_API_URL = "/api/generate";
       const PARTNER_API_URL = "/api/chat-partner";
-      
+      const GET_SESSION_API_URL = "/api/get-session";
+
       // Auth elements
       const authModal = document.getElementById('auth-modal');
       const guestLoginButton = document.getElementById('guest-login');
@@ -1240,140 +1241,163 @@
       const userAvatar = document.getElementById('user-avatar');
       const userName = document.getElementById('user-name');
       const logoutButton = document.getElementById('logout-button');
-      
+
       // User authentication state
       let currentUser = null;
-      
+
+      // Partner chat state
+      let selectedPartnerType = null;
+      let selectedPersonality = 'sweet';
+      let partnerSessionId = null;
+      let isPartnerTyping = false;
+
       // Check if user is already logged in (from localStorage)
       const storedUser = localStorage.getItem('rizzCoachUser');
       if (storedUser) {
         try {
           currentUser = JSON.parse(storedUser);
           handleAuthSuccess(currentUser);
+          // Restore session after user is loaded
+          restoreSession();
         } catch (error) {
           console.error('Error parsing stored user:', error);
-          // Clear invalid stored data
           localStorage.removeItem('rizzCoachUser');
         }
       }
-      
+
       // Google Sign-In callback
       window.handleCredentialResponse = async (response) => {
         const idToken = response.credential;
-
-        // Send the ID token to your backend for verification
         try {
-            const res = await fetch('/api/google-login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ id_token: idToken })
-            });
+          const res = await fetch('/api/google-login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id_token: idToken })
+          });
 
-            if (!res.ok) {
-                throw new Error('Failed to verify ID token');
-            }
-
-            const data = await res.json();
-            console.log('User info:', data);
-
-            // Update UI with user info
-            const user = {
-                id: data.id,
-                name: data.name,
-                email: data.email,
-                picture: data.picture,
-                isGuest: false
-            };
-
-            // Store user in localStorage
-            localStorage.setItem('rizzCoachUser', JSON.stringify(user));
-
-            // Handle successful authentication
-            handleAuthSuccess(user);
+          if (!res.ok) throw new Error('Failed to verify ID token');
+          const data = await res.json();
+          const user = {
+            id: data.user_id,
+            name: data.name,
+            email: data.email,
+            picture: data.picture,
+            isGuest: false
+          };
+          localStorage.setItem('rizzCoachUser', JSON.stringify(user));
+          handleAuthSuccess(user);
+          // Restore session after login
+          restoreSession();
         } catch (error) {
-            console.error('Error during Google login:', error);
+          console.error('Error during Google login:', error);
         }
       };
-      
+
       // Guest login
-guestLoginButton.addEventListener('click', () => {
-  const guestUser = {
-    id: 'guest-' + Math.random().toString(36).substring(2, 15),
-    name: 'Guest User',
-    email: '',
-    picture: 'data:image/svg+xml;utf8,' + encodeURIComponent(
-      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-        <circle cx="50" cy="35" r="20" fill="#7F56D9" />
-        <circle cx="50" cy="85" r="30" fill="#7F56D9" />
-        <circle cx="40" cy="30" r="3" fill="white" />
-        <circle cx="60" cy="30" r="3" fill="white" />
-        <path d="M40,45 Q50,55 60,45" stroke="white" stroke-width="2" fill="none" />
-      </svg>`
-    ),
-    isGuest: true
-  };
-  
-  // Store guest user in localStorage
-  localStorage.setItem('rizzCoachUser', JSON.stringify(guestUser));
-  
-  // Update UI
-  handleAuthSuccess(guestUser);
-  // Hide the auth modal after guest login
-  authModal.classList.add('hidden');
-});
-      
+      guestLoginButton.addEventListener('click', () => {
+        const guestUser = {
+          id: 'guest-' + Math.random().toString(36).substring(2, 15),
+          name: 'Guest User',
+          email: '',
+          picture: 'data:image/svg+xml;utf8,' + encodeURIComponent(
+            `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+              <circle cx="50" cy="35" r="20" fill="#7F56D9" />
+              <circle cx="50" cy="85" r="30" fill="#7F56D9" />
+              <circle cx="40" cy="30" r="3" fill="white" />
+              <circle cx="60" cy="30" r="3" fill="white" />
+              <path d="M40,45 Q50,55 60,45" stroke="white" stroke-width="2" fill="none" />
+            </svg>`
+          ),
+          isGuest: true
+        };
+        localStorage.setItem('rizzCoachUser', JSON.stringify(guestUser));
+        handleAuthSuccess(guestUser);
+        authModal.classList.add('hidden');
+        // Store session after guest login
+        restoreSession();
+      });
+
       // Logout
       logoutButton.addEventListener('click', () => {
-        // Clear user from localStorage
         localStorage.removeItem('rizzCoachUser');
-        
-        // Update UI
+        localStorage.removeItem('rizzCoachSession');
         handleLogout();
       });
-      
+
       // Handle successful authentication
       function handleAuthSuccess(user) {
         currentUser = user;
-        
-        // Hide auth modal
         authModal.style.display = 'none';
-        
-        // Remove blur from app
         appContainer.classList.remove('app-blur');
-        
-        // Update user menu
         userAvatar.src = user.picture;
         userName.textContent = user.name;
         userMenu.classList.remove('hidden');
       }
-      
+
       // Handle logout
       function handleLogout() {
         currentUser = null;
-        
-        // Show auth modal
         authModal.classList.remove('hidden');
-        
-        // Add blur to app
         appContainer.classList.add('app-blur');
-        
-        // Hide user menu
         userMenu.classList.add('hidden');
       }
-      
-      // Parse JWT token
-      function parseJwt(token) {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-        
-        return JSON.parse(jsonPayload);
+
+      // Function to restore session from localStorage and server
+      async function restoreSession() {
+        const storedSession = localStorage.getItem('rizzCoachSession');
+        if (!currentUser || !storedSession) return;
+
+        try {
+          const sessionData = JSON.parse(storedSession);
+          partnerSessionId = sessionData.sessionId;
+          selectedPartnerType = sessionData.partnerType;
+          selectedPersonality = sessionData.personality || 'sweet';
+
+          // Fetch session from server
+          const response = await fetch(GET_SESSION_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionId: partnerSessionId, userId: currentUser.id })
+          });
+
+          if (!response.ok) {
+            console.log('No session found on server, starting new session');
+            localStorage.removeItem('rizzCoachSession');
+            partnerMessages.innerHTML = ''; // Clear chat
+            return;
+          }
+
+          const data = await response.json();
+          // Update UI to show chat container
+          partnerSetupContainer.classList.add('hidden');
+          partnerChatContainer.classList.remove('hidden');
+          updatePartnerInfo();
+
+          // Clear existing messages
+          partnerMessages.innerHTML = '';
+
+          // Populate messages
+          if (data.messages && Array.isArray(data.messages)) {
+            data.messages.forEach(msg => {
+              if (msg.role === 'user') {
+                addUserMessage(msg.content);
+              } else if (msg.role === 'assistant') {
+                addPartnerMessage(msg.content);
+              }
+            });
+          } else {
+            console.warn('No messages found in session data');
+          }
+
+          // Scroll to bottom
+          partnerMessages.scrollTop = partnerMessages.scrollHeight;
+        } catch (error) {
+          console.error('Error restoring session:', error);
+          localStorage.removeItem('rizzCoachSession');
+          partnerMessages.innerHTML = ''; // Clear chat on error
+        }
       }
-      
+
       // Tab Navigation
       const tabs = document.querySelectorAll('.nav-tab');
       const tabContents = document.querySelectorAll('.tab-content');
@@ -1850,10 +1874,10 @@ guestLoginButton.addEventListener('click', () => {
       const partnerChatTitle = document.getElementById('partner-chat-title');
       
       // Partner chat state
-      let selectedPartnerType = null;
-      let selectedPersonality = 'sweet';
-      let partnerSessionId = generateSessionId();
-      let isPartnerTyping = false;
+      // let selectedPartnerType = null; // Already declared above
+      selectedPersonality = 'sweet';
+      partnerSessionId = generateSessionId();
+      // let isPartnerTyping = false; // Already declared above
       
       // Setup partner type buttons
       partnerTypeButtons.forEach(button => {
@@ -1898,22 +1922,18 @@ guestLoginButton.addEventListener('click', () => {
       // Start chat button click handler
       startChatButton.addEventListener('click', () => {
         if (!selectedPartnerType) return;
-        
-        // Hide setup container and show chat container
+        partnerSessionId = generateSessionId();
+        localStorage.setItem('rizzCoachSession', JSON.stringify({
+          sessionId: partnerSessionId,
+          partnerType: selectedPartnerType,
+          personality: selectedPersonality
+        }));
         partnerSetupContainer.classList.add('hidden');
         partnerChatContainer.classList.remove('hidden');
-        
-        // Update partner info
         updatePartnerInfo();
-        
-        // Show loading state
         partnerLoading.classList.remove('hidden');
-        
-        // Generate a welcome message
         setTimeout(() => {
           partnerLoading.classList.add('hidden');
-          
-          // Add welcome message
           const welcomeMessage = getWelcomeMessage();
           addPartnerMessage(welcomeMessage);
         }, 1500);
@@ -1921,38 +1941,29 @@ guestLoginButton.addEventListener('click', () => {
       
       // Reset chat button click handler
       resetChatButton.addEventListener('click', () => {
-        // Reset chat
         partnerMessages.innerHTML = '';
         partnerSessionId = generateSessionId();
-        
-        // Show setup container and hide chat container
+        localStorage.setItem('rizzCoachSession', JSON.stringify({
+          sessionId: partnerSessionId,
+          partnerType: null,
+          personality: 'sweet'
+        }));
         partnerSetupContainer.classList.remove('hidden');
         partnerChatContainer.classList.add('hidden');
-        
-        // Reset partner type selection
         selectedPartnerType = null;
         partnerTypeButtons.forEach(btn => {
-          btn.classList.remove('selected');
-          btn.classList.remove('boyfriend');
-          btn.classList.remove('girlfriend');
+          btn.classList.remove('selected', 'boyfriend', 'girlfriend');
         });
-        
-        // Reset start chat button
         startChatButton.disabled = true;
-        startChatButton.classList.remove('boyfriend');
-        startChatButton.classList.remove('girlfriend');
-        
-        // Reset personality buttons
+        startChatButton.classList.remove('boyfriend', 'girlfriend');
         personalityButtons.forEach(btn => {
-          btn.classList.remove('boyfriend');
-          btn.classList.remove('girlfriend');
+          btn.classList.remove('boyfriend', 'girlfriend');
           if (btn.dataset.personality === 'sweet') {
             btn.classList.add('active');
           } else {
             btn.classList.remove('active');
           }
         });
-        
         selectedPersonality = 'sweet';
       });
       
